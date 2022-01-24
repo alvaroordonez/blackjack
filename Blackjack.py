@@ -1,181 +1,191 @@
-#This code is based on the Udemy course milestone project
-#This code will take the Class and Card classes to make a 52 card deck
-#Will ask the player to make a bet agains the dealer and then play blackjack
-#Player will be asek to hit or take another card
-#This is a bit unique as I forgot how to play Blackjack and so the program keeps playing
-#until all 52 cards are used up
+""" Blackjack game using Python programmimg
+
+This code is based on the Udemy course milestone project
+This code will take the Class and Card classes to make a 52 card deck
+Will ask the player to make a bet agains the dealer and then play blackjack
+Player will be asek to hit or take another card
+This is a bit unique as I forgot how to play Blackjack and so the program keeps playing
+until all 52 cards are used up
+
+gg
+"""
 
 import random
 
-#These are my constants for the future I will UPPER_SNAKE_CASE
+# These are my constants for the future I will UPPER_SNAKE_CASE; Also "linter"
 suits = ('Hearts', 'Diamonds', 'Spades', 'Clubs')
 ranks = ('Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Jack', 'Queen', 'King', 'Ace')
-values = {'Two':2, 'Three':3, 'Four':4, 'Five':5, 'Six':6, 'Seven':7, 'Eight':8, 'Nine':9, 'Ten':10, 'Jack':10,
-         'Queen':10, 'King':10, 'Ace':11}
-
-if __name__=="__main__":
-
-    class Card():
-
-        def __init__(self, suit, rank):
-            self.suit = suit
-            self.rank = rank
-            self.value = values[rank]
-
-        def __str__(self):
-            return f"{self.rank} of {self.suit}"
+values = {'Two': 2, 'Three': 3, 'Four': 4, 'Five': 5, 'Six': 6, 'Seven': 7, 'Eight': 8, 'Nine': 9, 'Ten': 10,
+          'Jack': 10,
+          'Queen': 10, 'King': 10, 'Ace': 11}
 
 
-    class Deck():
+class Card():
 
-        def __init__(self):
-            self.all_cards = []
-            for suits_card in suits:
-                for rank_card in ranks:
-                    self.all_cards.append(Card(suits_card, rank_card))
+    def __init__(self, suit, rank):
+        self.suit = suit
+        self.rank = rank
+        self.value = values[rank]
 
-        def shuffle(self):
-            random.shuffle(self.all_cards)
-
-        def deal(self):
-            return self.all_cards.pop()
-
-        def __str__(self):
-            for x in range(0, len(self.all_cards)):
-                print(f"{self.all_cards[x]}")
-            return f"This is the current cards in the deck"
+    # Example of when magic(dunder) method is used to override functionality. Alt - __repr__
+    def __str__(self):
+        return f"{self.rank} of {self.suit}"
 
 
-    class Hand():
+class Deck():
 
-        def __init__(self):
-            self.all_cards = []
-            # player overall value towards 21 = winning! Blackjack
-            self.player_value = 0
-            # counter to keep track of when an ace is in player hand
-            self.ace_counter = 0
+    def __init__(self):
+        self.all_cards = []
+        for suits_card in suits:
+            for rank_card in ranks:
+                self.all_cards.append(Card(suits_card, rank_card))
 
-        # adding a card to player hand, calculating value towards 21 & Ace counter
-        def add_card(self, new_card):
-            self.all_cards.append(new_card)
-            self.player_value += new_card.value
-            if new_card.rank == "Ace":
-                self.ace_counter += 1
+    def shuffle(self):
+        random.shuffle(self.all_cards)
 
-        # Best way to change the Ace value is by subtracting from the overall value sum
-        def adjust_ace(self):
-            while self.player_value > 21 and self.ace_counter:
-                self.player_value -= 10
-                self.ace_counter -= 1
+    def deal(self):
+        return self.all_cards.pop()
 
-        def __str__(self):
-            # for x in range(0,len(self.all_cards)):
-            # print(f"{self.all_cards[x]}")
-            return f"Hand Value is {self.player_value}"
+    def __str__(self):
+        for x in range(0, len(self.all_cards)):
+            print(f"{self.all_cards[x]}")
+        return f"This is the current cards in the deck"
 
 
-    class Chips():
+class Hand():
 
-        def __init__(self):
-            self.total = 100  # lets say this is our starting chips
-            self.bet = 0
+    def __init__(self):
+        self.all_cards = []
+        # player overall value towards 21 = winning! Blackjack
+        self.player_value = 0
+        # counter to keep track of when an ace is in player hand
+        self.ace_counter = 0
 
-        def win_bet(self):
-            self.total += self.bet
+    # adding a card to player hand, calculating value towards 21 & Ace counter
+    def add_card(self, new_card):
+        self.all_cards.append(new_card)
+        self.player_value += new_card.value
+        if new_card.rank == "Ace":
+            self.ace_counter += 1
 
-        def lose_bet(self):
-            self.total -= self.bet
+    # Best way to change the Ace value is by subtracting from the overall value sum
+    def adjust_ace(self):
+        while self.player_value > 21 and self.ace_counter:
+            self.player_value -= 10
+            self.ace_counter -= 1
+
+    def __str__(self):
+        # for x in range(0,len(self.all_cards)):
+        # print(f"{self.all_cards[x]}")
+        return f"Hand Value is {self.player_value}"
 
 
-    def take_bet(chips):
+class Chips():
 
-        while True:
-            try:
-                chips.bet = int(input("Place your bet Player: "))
+    def __init__(self):
+        self.total = 100  # lets say this is our starting chips
+        self.bet = 0
 
-            except ValueError:
-                print("You must bet an integer value")
+    def win_bet(self):
+        self.total += self.bet
 
+    def lose_bet(self):
+        self.total -= self.bet
+
+
+def take_bet(chips):
+    while True:
+        try:
+            chips.bet = int(input("Place your bet Player: "))
+
+        except ValueError:
+            print("You must bet an integer value")
+
+        else:
+            if chips.bet > chips.total:
+                print("You exceeded your total of {chips.total}")
+            elif chips.bet < 0:
+                print("Come on now, be realistic, has to be a positive number")
             else:
-                if chips.bet > chips.total:
-                    print("You exceeded your total of {chips.total}")
-                else:
-                    break
+                break
 
 
-    def hit(deck, hand):
-        hand.add_card(deck.deal())
-        hand.adjust_ace()
+def hit(deck, hand):
+    hand.add_card(deck.deal())
+    hand.adjust_ace()
 
 
-    def hit_or_stand(deck, hand):
-        global playing
+def hit_or_stand(deck, hand):
+    global playing
 
-        while True:
+    while True:
 
-            turn = input("\nWill you (hit) or (stand)? (please type one of the following under paranthesis)\n")
+        turn = input("\nWill you (hit) or (stand)? (please type one of the following under paranthesis)\n")
 
-            if turn == "hit":
-                hit(deck, hand)
-            elif turn == "stand":
-                playing = False
-            else:
-                print('input must be either "hit" or "stand"! Try again')
-                continue
-            break
-
-
-    def show_some(player, dealer):
-        print("\nShow me only some cards yo ;)")
-        print(f"\nDealer's hand:\nhidden\n{dealer.all_cards[1]}")
-        print("\nPlayer's hand:", *player.all_cards, player, sep="\n")
+        if turn == "hit":
+            hit(deck, hand)
+        elif turn == "stand":
+            playing = False
+        else:
+            print('input must be either "hit" or "stand"! Try again')
+            continue
+        break
 
 
-    def show_all(player, dealer):
-        print("Lay it all on the floor , please yo!")
-        print("\nDealer's Hand: \n", *dealer.all_cards, dealer, sep="\n")
-        print("\nPlayer's Hand: \n", *player.all_cards, player, sep="\n")
+# quick tip from James: *player.all_cards not a pointer like in C but means to "unpack" all the list items.
+def show_some(player, dealer):
+    print("\nShow me only some cards yo ;)")
+    print(f"\nDealer's hand:\nhidden\n{dealer.all_cards[1]}")
+    print("\nPlayer's hand:", *player.all_cards, player, sep="\n")
 
 
-    def player_busts(player, player_chips):
-        print("*****************************")
-        print("Player busts")
-        print("*****************************")
-        player_chips.lose_bet()
-        # player.all_cards = []
+def show_all(player, dealer):
+    print("Lay it all on the floor , please yo!")
+    print("\nDealer's Hand: \n", *dealer.all_cards, dealer, sep="\n")
+    print("\nPlayer's Hand: \n", *player.all_cards, player, sep="\n")
 
 
-    def player_wins(player, player_chips):
-        print("*****************************")
-        print("Player wins!")
-        print("*****************************")
-        player_chips.win_bet()
-        # player.all_cards = []
+def player_busts(player, player_chips):
+    print("*****************************")
+    print("Player busts")
+    print("*****************************")
+    player_chips.lose_bet()
+    # player.all_cards = []
 
 
-    def dealer_busts(dealer, dealer_chips):
-        print("*****************************")
-        print("Dealer busts")
-        print("*****************************")
-        dealer_chips.lose_bet()
-        # dealer.all_cards = []
+def player_wins(player, player_chips):
+    print("*****************************")
+    print("Player wins!")
+    print("*****************************")
+    player_chips.win_bet()
+    # player.all_cards = []
 
 
-    def dealer_wins(dealer, dealer_chips):
-        print("*****************************")
-        print("Dealer Wins!")
-        print("*****************************")
-        dealer_chips.win_bet()
-        # dealer.all_cards = []
+def dealer_busts(dealer, dealer_chips):
+    print("*****************************")
+    print("Dealer busts")
+    print("*****************************")
+    dealer_chips.lose_bet()
+    # dealer.all_cards = []
 
 
-    def push():
-        print("****************************************************")
-        print("Its a tie, both Player and Dealer Push Bay-Bee")
-        print("****************************************************")
-        pass
+def dealer_wins(dealer, dealer_chips):
+    print("*****************************")
+    print("Dealer Wins!")
+    print("*****************************")
+    dealer_chips.win_bet()
+    # dealer.all_cards = []
 
 
+def push():
+    print("****************************************************")
+    print("Its a tie, both Player and Dealer Push Bay-Bee")
+    print("****************************************************")
+    pass
+
+
+# Main Game starts here
+if __name__ == "__main__":
     the_deck = Deck()
     # player = Hand()
     # dealer = Hand()
@@ -185,6 +195,7 @@ if __name__=="__main__":
 
     round = 1
 
+    #Will try to shorten code to reduce all the logic. Maybe a play_turn function
     while True:  # This is the overall Blackjack game, until all cards in deck are gone or player quits
 
         player = Hand()
@@ -275,8 +286,21 @@ if __name__=="__main__":
         player.all_cards = []
         dealer.all_cards = []
         round += 1
-        #This project originated in Jupyter and therefore the clear_output() command was used
-        #This will be a seperate commit on the Blackjack branch
-        #And one more push from my local machine to Blackjack branch Github
-        #clear_output()
+
+        """This project originated in Jupyter and therefore the clear_output() command was used
+        This will be a separate commit on the Blackjack branch
+        And one more push from my local machine to Blackjack branch Github
+        
+        On a side note, from a collab
+        
+        You can run your program outside of Jupyter by running:
+
+        python3 Blackjack.py
+        Then you can type clear in the terminal when the program is done if you want to clear the screen 
+        (assuming bash or bash-like shell for the clear command).
+
+        I also recommend lower case for .py files. I think that's supposed to be standard PEP8 guidelines.
+        
+        clear_output()"""
+
         print('\n' * 100)
